@@ -1,12 +1,10 @@
 import ptbot
 import os
 import random
-from dotenv import load_dotenv
 from pytimeparse import parse
 from decouple import config
 
 
-load_dotenv()
 TG_CHAT_ID = config('TG_CHAT_ID')
 TG_TOKEN = config('TG_TOKEN')
 
@@ -32,20 +30,20 @@ def reply(chat_id, text, bot):
   	bot=bot
   	)
 	bot.create_timer(parse(text), notify, chat_id=chat_id, text=text, bot=bot)
+	
   
-
 def notify_progress(secs_left, chat_id, text, message_id, start_seconds, bot):
 	stop_seconds = start_seconds - secs_left
 	progressbar = render_progressbar(start_seconds, stop_seconds)
 	bot_message = "Осталось секунд: {}.\n".format(secs_left)
 	update_message = bot_message + progressbar
 	bot.update_message(chat_id, message_id, update_message)
-
+	
 
 def notify(chat_id, text, bot):
-  bot.send_message(chat_id, "Время вышло")
+	bot.send_message(chat_id, "Время вышло")
 
-
+  
 def main():
 	bot = ptbot.Bot(TG_TOKEN)
 	bot.reply_on_message(reply, bot=bot)
