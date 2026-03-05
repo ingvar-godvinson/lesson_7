@@ -3,6 +3,12 @@ import os
 import random
 from dotenv import load_dotenv
 from pytimeparse import parse
+from decouple import config
+
+
+load_dotenv()
+TG_CHAT_ID = config('TG_CHAT_ID')
+TG_TOKEN = config('TG_TOKEN')
 
 
 def render_progressbar(total, iteration, prefix='', suffix='', length=30, fill='█', zfill='░'):
@@ -17,17 +23,18 @@ def render_progressbar(total, iteration, prefix='', suffix='', length=30, fill='
 def reply(chat_id, text, bot):
 	message_id = bot.send_message(chat_id, "Запускаю таймер...")
 	bot.create_countdown(
-		parse(text),
-		notify_progress,
-		message_id=message_id,
-		chat_id=chat_id,
-		text=text,
-		start_seconds=parse(text)
+  	parse(text),
+  	notify_progress,
+  	message_id=message_id,
+  	chat_id=chat_id,
+  	text=text,
+  	start_seconds=parse(text),
+  	bot=bot
   	)
-	bot.create_timer(parse(text), notify, chat_id=chat_id, text=text)
+	bot.create_timer(parse(text), notify, chat_id=chat_id, text=text, bot=bot)
   
 
-def notify_progress(secs_left, chat_id, text, message_id, start_seconds):
+def notify_progress(secs_left, chat_id, text, message_id, start_seconds, bot):
 	stop_seconds = start_seconds - secs_left
 	progressbar = render_progressbar(start_seconds, stop_seconds)
 	bot_message = "Осталось секунд: {}.\n".format(secs_left)
@@ -35,14 +42,16 @@ def notify_progress(secs_left, chat_id, text, message_id, start_seconds):
 	bot.update_message(chat_id, message_id, update_message)
 
 
-def notify(chat_id, text):
-  bot.send_message(chat_id, "Время вышло")  
+def notify(chat_id, text, bot):
+  bot.send_message(chat_id, "Время вышло")
 
 
-if __name__ == "__main__":
-	load_dotenv()
-	TG_CHAT_ID = os.environ['TG_CHAT_ID']
-	TG_TOKEN = os.environ['TG_TOKEN']
+def main():
 	bot = ptbot.Bot(TG_TOKEN)
 	bot.reply_on_message(reply, bot=bot)
 	bot.run_bot()
+
+
+if __name__ == "__main__":
+	main()
+
