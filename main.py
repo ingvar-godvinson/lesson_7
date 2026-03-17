@@ -54,8 +54,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    bot.run_bot()
-
-
-if __name__ == "__main__":
-    main()
